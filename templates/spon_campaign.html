@@ -1,0 +1,141 @@
+{% extends "spon.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin's Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .navbar-light {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .nav-link.active {
+            background-color: #007bff;
+            color: white !important;
+            border-radius: 5px;
+        }
+
+        .campaign-card {
+            border: 1px solid #dee2e6;
+            margin-bottom: 10px;
+        }
+
+        .btn-view {
+            background-color: #ffc107;
+            border-color: #ffc107;
+        }
+
+        .btn-remove {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+
+        .progress {
+            height: 25px;
+        }
+
+        
+    </style>
+</head>
+
+<body>
+   
+    <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#campaignModal">
+        Add Campaign
+    </button> -->
+
+    <div class=" d-flex flex-column gap-3 justify-content-center align-items-center" style="height: 80vh">
+        <div class="rounded-circle border border-3 border-primary d-flex justify-content-center align-items-center" style="width: 100px; height: 100px;">
+            <button type="button" class="border-0 bg-transparent fs-1 text text-primary w-100 h-100" data-bs-toggle="modal" data-bs-target="#campaignModal">
+                +
+            </button>
+        </div>
+        <h3>Add Campaign</h3>
+    </div>
+
+    <div class="modal" id="campaignModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modal title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                   
+                   
+                    <form id="campaign-form" class="mx-1 mx-md-4 " method="post"
+                        action="{{ url_for('spon_campaign') }}">
+
+                        <div class="d-flex flex-row align-items-center mb-4">
+                            <div data-mdb-input-init class="form-outline flex-fill mb-0">
+                                <input required type="text" name="title" placeholder="Campaign Name"
+                                    class="form-control" />
+                            </div>
+                        </div>
+                        <div class="d-flex flex-row align-items-center mb-4">
+                            <div data-mdb-input-init class="form-outline flex-fill mb-0">
+                                <input required type="text" name="description" placeholder="Description"
+                                    class="form-control" />
+                            </div>
+                        </div>
+                        <div class="d-flex flex-row align-items-center mb-4">
+
+                            <div data-mdb-input-init class="form-outline flex-fill mb-0">
+                                <input required type="date" name="start_date" placeholder="Start Date"
+                                    class="form-control" />
+
+                            </div>
+                        </div>
+                        <div class="d-flex flex-row align-items-center mb-4">
+                            <div data-mdb-input-init class="form-outline flex-fill mb-0">
+                                <input required type="date" name="end_date" placeholder="End Date"
+                                    class="form-control" />
+                            </div>
+                        </div>
+                        <div class="d-flex flex-row align-items-center mb-4">
+                            <div data-mdb-input-init class="form-outline flex-fill mb-0">
+                                <input required type="number" name="budget" placeholder="Budget" class="form-control" min="1" />
+                            </div>
+                        </div>
+
+                        <div class="d-flex flex-row align-items-center mb-4">
+                            <div data-mdb-input-init class="form-outline flex-fill mb-0">
+                                <fieldset>
+                                    <legend>Campaign Visibility</legend>
+                                    <div>
+                                        <input type="radio" id="private" name="visibility" value="Private" checked />
+                                        <label for="private">Private</label>
+                                    </div>
+                                    <div>
+                                        <input type="radio" id="public" name="visibility" value="Public" />
+                                        <label for="public">Public</label>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+
+
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
+{% endblock %}

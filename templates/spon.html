@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+    <nav class="navbar navbar-expand-lg navbar-light mb-4">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{ url_for('spon_profile') }}"><strong>Sponsor's Dashboard</strong></a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link {{ 'active' if request.endpoint == 'spon_profile' else '' }}" href="{{ url_for('spon_profile') }}">Profile</a>
+                <a class="nav-link {{ 'active' if request.endpoint == 'spon_find' else '' }}" href="{{ url_for('spon_find') }}">Find</a>
+                <a class="nav-link {{ 'active' if request.endpoint == 'spon_campaign' else '' }}" href="{{ url_for('spon_campaign') }}">Campaign</a>
+                <a class="nav-link" href="{{url_for('logout')}}">Logout</a>
+            
+        </div>
+    </nav>
+    <!-- <h1>Hello {{username}}</h1> -->
+    {% block content %}{% endblock %}
+</div>
+</body>
+</html>

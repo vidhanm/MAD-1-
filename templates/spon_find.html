@@ -1,0 +1,329 @@
+{% extends "spon.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sponsor Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        .profile-pic {
+            width: 100px;
+            height: 100px;
+            background-color: #90EE90;
+            border-radius: 10px;
+        }
+
+        .header {
+            background-color: #e6f3ff;
+        }
+
+        .campaign {
+            background-color: #f9f9f9;
+        }
+
+        .view-btn {
+            background-color: #FFD700;
+            border: none;
+        }
+
+        .accept-btn {
+            background-color: #90EE90;
+            border: none;
+        }
+
+        .reject-btn {
+            background-color: #FFB6C1;
+            border: none;
+        }
+
+        .navbar-light {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .nav-link.active {
+            background-color: #007bff;
+            color: white !important;
+            border-radius: 5px;
+        }
+
+        .campaign-card {
+            border: 1px solid #dee2e6;
+            margin-bottom: 10px;
+        }
+
+        .btn-view {
+            background-color: #ffc107;
+            border-color: #ffc107;
+        }
+
+        .btn-accept {
+            background-color: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+
+        .btn-reject {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+
+        .progress {
+            height: 25px;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <form method="GET" action="{{ url_for('spon_find') }}"
+            class="mb-4 d-flex gap-4 justify-content-center align-items-center">
+            <div><input type="text" name="q" placeholder="Search" class="rounded border border-2 border-secondary p-1">
+            </div>
+            <div>
+                <input type="radio" name="type" value="campaign" required> Campaign
+                <input type="radio" name="type" value="influencer" required> Influencer
+            </div>
+            <div><input type="submit" value="Search" class="text-light bg-primary rounded p-1 px-2 border-0"></div>
+        </form>
+
+
+        <div id="campaignTable">
+            <h3 class="fw-medium">Campaigns</h3>
+            <table class="table table-striped-hover border mb-4">
+                <thead>
+                    <tr>
+                        <th scope="col">Title</th>
+                        <th scope="col">Influencer</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Start Date</th>
+                        <th scope="col">End Date</th>
+                        <th scope="col">Budget</th>
+                        <th scope="col">Visibility</th>
+                        <th scope="col" class="border-start"> </th>
+                        <th scope="col"> </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for result in campresults %}
+                    <tr>
+                        <td>{{result.title}}</td>
+                        <td>{{result.influencer}}</td>
+                        <td>{{result.description}}</td>
+                        <td>{{result.start_date}}</td>
+                        <td>{{result.end_date}}</td>
+                        <td>{{result.budget}}</td>
+                        <td>{{result.visibility}}</td>
+                        <td class="border-start">
+                            <a href="{{url_for('spon_find')}}?edit_id={{result.campaign_id}}"
+                                class="btn border-2 btn-outline-warning p-1 px-2">Edit</a>
+                        </td>
+                        <td>
+                            <a class="btn btn-outline-danger border-2 p-1 px-2"
+                                href="{{url_for('spon_find_camp_delete',id=result.campaign_id)}}">Delete</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div id="influencerTable">
+            <h3 class="fw-medium">Influencers</h3>
+            <table class="table table-striped-hover border">
+                <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">Platform</th>
+                        <th scope="col">Followers</th>
+                        <th scope="col" style="width: 18%;"> </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for result in influresults %}
+                    <tr>
+                        <td>{{result[0].name}}</td>
+                        <td>{{result[0].email}}</td>
+                        <td>{{result[0].username}}</td>
+                        <td>{{platforms[result[1].platform-1]}}</td>
+                        <td>{{result[1].followers if result[1].followers != None else "Unknown"}}</td>
+                        <td><button data-bs-toggle="modal" data-bs-target="#sendrequest"
+                                data-influencer-id="{{result[0].id}}" class="btn border-2 btn-outline-primary"
+                                style="--bs-btn-color-rgb: 0,0,0;">Send Request</button></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% if edit_form != None %}
+    <div class="modal-backdrop show"></div>
+    {% endif %}
+
+    <!--Send Request Modal -->
+    <div class="modal" id="sendrequest">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modal title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                    <form id="spon-request-form" class="mx-1 mx-md-4 " method="POST"
+                        action="{{ url_for('spon_find_request') }}">
+                        <input type="hidden" id="influencer-id" name="influencer_id">
+                        <div class="d-flex flex-row align-items-center mb-4">
+                            <div data-mdb-input-init class="form-outline flex-fill mb-0">
+                                <select required name='campaign_id' class="custom-select w-100">
+                                    <option selected>Campaign Name</option>
+                                    {% for result in campresults %}
+                                    <option value="{{result.campaign_id}}">{{result.title}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="d-flex flex-row align-items-center mb-4">
+                            <div data-mdb-input-init class="form-outline flex-fill mb-0">
+                                <input required type="text" name="message" placeholder="Message" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Send</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Edit Campaign Modal -->
+    <div id="campedit" class="modal" tabindex="-1" aria-labelledby="campaignModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 id="campaignModalLabel" class="modal-title">Campaign Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                        onclick="redirectToHome()"></button>
+                </div>
+                <div class="modal-body">
+                    {% if edit_form != None %}
+                    <form action="{{ url_for('spon_find_camp_edit', id=edit_form.campaign_id) }}" method="POST">
+
+                        <div class="mb-3">
+                            <input type="text" class="form-control" name="title" id="title"
+                                value="{{ edit_form.title }}">
+
+                        </div>
+                        <div class="mb-3">
+                            <input type="text" class="form-control" name="description" id="description"
+                                value="{{ edit_form.description }}">
+                        </div>
+                        <div class="mb-3">
+                            <input type="date" class="form-control" name="start_date" id="start_date"
+                                value="{{ edit_form.start_date }}">
+
+                        </div>
+                        <div class="mb-3">
+                            <input type="date" class="form-control" name="end_date" id="end_date"
+                                value="{{ edit_form.end_date }}">
+                        </div>
+                        <div class="mb-3">
+                            <input type="number" class="form-control" name="budget" id="budget"
+                                value="{{ edit_form.budget }}">
+                        </div>
+                        <div class="mb-3">
+                            <select name="visibility" id="visibility" class="form">
+                                <option value="Public" {{"selected" if edit_form.visibility=="Public" else "" }}>Public
+                                </option>
+                                <option value="Private" {{"selected" if edit_form.visibility=="Private" else "" }}>
+                                    Private</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </form>
+                    {% else %}
+                    <p>No campaign selected for editing.</p>
+                    {% endif %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                        onclick="redirectToHome()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const url = new URL(location.href);
+            const param = new URLSearchParams(url.search);
+            const Qtype = param.get("type");
+            if (Qtype == "campaign") {
+                document.getElementById('campaignTable').style.display = '';
+                document.getElementById('influencerTable').style.display = 'none';
+            } else if (Qtype == "influencer") {
+                document.getElementById('campaignTable').style.display = 'none';
+                document.getElementById('influencerTable').style.display = '';
+            }
+
+            var radios = document.querySelectorAll('input[type=radio][name="type"]');
+
+            function changeHandler(event) {
+                if (this.value === 'campaign') {
+                    document.getElementById('campaignTable').style.display = '';
+                    document.getElementById('influencerTable').style.display = 'none';
+                } else if (this.value === 'influencer') {
+                    document.getElementById('campaignTable').style.display = 'none';
+                    document.getElementById('influencerTable').style.display = '';
+                }
+            }
+
+            Array.prototype.forEach.call(radios, function (radio) {
+                radio.addEventListener('change', changeHandler);
+            });
+
+
+            var buttons = document.querySelectorAll('button[data-bs-toggle="modal"]');
+            buttons.forEach(function (button) {
+                button.addEventListener('click', function () {
+                    var influencerId = this.getAttribute('data-influencer-id');
+                    document.getElementById('influencer-id').value = influencerId;
+                });
+            });
+
+        });
+
+        function redirectToHome() {
+            location.href = "{{url_for('spon_find')}}"
+        }
+    </script>
+
+    {% if edit_form != None %}
+    <script>
+        const modal = document.querySelector("#campedit")
+        modal.style.display = "block";
+        modal.style.paddingRight = "17px";
+        modal.className = "modal fade show"; 
+    </script>
+    {% endif %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
+{% endblock %}

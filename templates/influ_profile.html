@@ -1,0 +1,204 @@
+{% extends "influ.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Influencer's Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .profile-pic {
+            width: 100px;
+            height: 100px;
+            background-color: #90EE90;
+            border-radius: 10px;
+        }
+
+        .header {
+            background-color: #e6f3ff;
+        }
+
+        .campaign {
+            background-color: #f9f9f9;
+        }
+
+        .view-btn {
+            background-color: #FFD700;
+            border: none;
+        }
+
+        .accept-btn {
+            background-color: #90EE90;
+            border: none;
+        }
+
+        .reject-btn {
+            background-color: #FFB6C1;
+            border: none;
+        }
+
+        .navbar-light {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .nav-link.active {
+            background-color: #007bff;
+            color: white !important;
+            border-radius: 5px;
+        }
+
+        .campaign-card {
+            border: 1px solid #dee2e6;
+            margin-bottom: 10px;
+        }
+
+        .btn-view {
+            background-color: #ffc107;
+            border-color: #ffc107;
+        }
+
+        .btn-accept {
+            background-color: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+
+        .btn-reject {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+
+        .progress {
+            height: 25px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card-body">
+
+        <h3>Active Campaigns:</h3>
+        {% for a in activecamp %}
+        <div class="campaign p-3 mb-3 rounded">
+            <div class="d-flex justify-content-between align-items-center">
+                <span>{{a[1].title}} | {{a[2].username}}</span>
+                <a class="btn btn-view" data-bs-toggle="modal" data-bs-target="#viewcamp">View</a>
+            </div>
+        </div>
+
+
+        <div class="modal fade" id="viewcamp" tabindex="-1" aria-labelledby="campaignModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="campaignModalLabel">Campaign Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        
+                    </div>
+                    <div class="modal-body">
+                        <dl class="row">
+
+                            <dt class="col-sm-4">Title:</dt>
+                            <dd class="col-sm-8">{{ a[1].title }}</dd>
+
+                            <dt class="col-sm-4">Description:</dt>
+                            <dd class="col-sm-8">{{ a[1].description }}</dd>
+
+                            <dt class="col-sm-4">Start Date:</dt>
+                            <dd class="col-sm-8">{{ a[1].start_date }}</dd>
+
+                            <dt class="col-sm-4">End Date:</dt>
+                            <dd class="col-sm-8">{{ a[1].end_date }}</dd>
+
+                            <dt class="col-sm-4">Budget:</dt>
+                            <dd class="col-sm-8">{{ a[1].budget }}</dd>
+
+                            
+                        </dl>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+
+
+        <h3>New Requests:</h3>
+        {% for camp in newcamp %}
+        <div class="campaign p-3 mb-3 rounded">
+            <div class="d-flex justify-content-between align-items-center">
+
+                <span>{{ camp[0].title }} | {{camp[2].username}}</span>
+                <div>
+                    <button type="button" class="btn btn-warning me-1" data-bs-toggle="modal"
+                        data-bs-target="#viewrequest">
+                        View
+                    </button>
+                    <a class="btn btn-success"
+                        href="{{url_for('influ_profile_accept',id=camp[1].request_id)}}">Accept</a>
+                    <a class="btn btn-danger"
+                        href="{{url_for('influ_profile_reject',id=camp[1].request_id)}}">Reject</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    </div>
+
+
+
+
+    <!-- Modal -->
+    {% for camp in newcamp %}
+    <div class="modal fade" id="viewrequest" tabindex="-1" aria-labelledby="campaignModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="campaignModalLabel">Campaign Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <dl class="row">
+
+                        <dt class="col-sm-4">Title:</dt>
+                        <dd class="col-sm-8">{{ camp[0].title }}</dd>
+
+                        <dt class="col-sm-4">Description:</dt>
+                        <dd class="col-sm-8">{{ camp[0].description }}</dd>
+
+                        <dt class="col-sm-4">Start Date:</dt>
+                        <dd class="col-sm-8">{{ camp[0].start_date }}</dd>
+
+                        <dt class="col-sm-4">End Date:</dt>
+                        <dd class="col-sm-8">{{ camp[0].end_date }}</dd>
+
+                        <dt class="col-sm-4">Budget:</dt>
+                        <dd class="col-sm-8">{{ camp[0].budget }}</dd>
+
+                      
+                      
+                       
+                    </dl>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
+{% endblock %}

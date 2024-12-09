@@ -1,0 +1,166 @@
+{% extends "spon.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sponsor Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .navbar-light {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .nav-link.active {
+            background-color: #007bff;
+            color: white !important;
+            border-radius: 5px;
+        }
+
+        .campaign-card {
+            border: 1px solid #dee2e6;
+            margin-bottom: 10px;
+        }
+
+        .btn-view {
+            background-color: #ffc107;
+            border-color: #ffc107;
+        }
+
+        .btn-accept {
+            background-color: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+
+        .btn-reject {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+
+        .progress {
+            height: 25px;
+        }
+    </style>
+</head>
+
+<body>
+
+
+
+
+    <h3 class="mt-4">Active Campaigns:</h3>
+    {% for a in activecamp %}
+    <div class="campaign-list">
+        <div class="card campaign-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span>{{a[1].title}} | {{a[2].username}}</span>
+                    <a class="btn btn-view" data-bs-toggle="modal" data-bs-target="#viewcamp">View</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="viewcamp" tabindex="-1" aria-labelledby="campaignModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="campaignModalLabel">Campaign Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <dl class="row">
+
+                        <dt class="col-sm-4">Title:</dt>
+                        <dd class="col-sm-8">{{ a[1].title }}</dd>
+
+                        <dt class="col-sm-4">Description:</dt>
+                        <dd class="col-sm-8">{{ a[1].description }}</dd>
+
+                        <dt class="col-sm-4">Start Date:</dt>
+                        <dd class="col-sm-8">{{ a[1].start_date }}</dd>
+
+                        <dt class="col-sm-4">End Date:</dt>
+                        <dd class="col-sm-8">{{ a[1].end_date }}</dd>
+
+                        <dt class="col-sm-4">Budget:</dt>
+                        <dd class="col-sm-8">{{ a[1].budget }}</dd>
+
+                    </dl>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    {% endfor %}
+
+
+
+    <h3 class="mt-4">New Requests:</h3>
+    {% for res in campnames %}
+
+    <div class="requests-list">
+        <div class="card campaign-card">
+            <div class="card-body d-flex justify-content-between align-items-center">
+
+                <span> {{res[0].title}} | {{res[2].username}}</span>
+
+                <div>
+                    <button class="btn btn-view me-2" data-bs-toggle="modal" data-bs-target="#viewcamp{{res[1].request_id}}">View</button>
+                    <a class="btn btn-accept me-2"
+                        href="{{url_for('spon_profile_accept',id=res[1].request_id)}}">Accept</a>
+                    <a class="btn btn-reject" href="{{url_for('spon_profile_reject',id=res[1].request_id)}}">Reject</a>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="viewcamp{{res[1].request_id}}" tabindex="-1" aria-labelledby="campaignModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="campaignModalLabel">Campaign Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <dl class="row">
+    
+                            <dt class="col-sm-4">Name:</dt>
+                            <dd class="col-sm-8">{{ res[2].name }}</dd>
+    
+                            <dt class="col-sm-4">Email:</dt>
+                            <dd class="col-sm-8">{{ res[2].email }}</dd>
+    
+                            <dt class="col-sm-4">Platform:</dt>
+                            <dd class="col-sm-8">{{ platforms[res[3].platform-1] }}</dd>
+    
+                            <dt class="col-sm-4">Followers:</dt>
+                            <dd class="col-sm-8">{{ res[3].followers }}</dd>
+    
+                        </dl>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        {% endfor %}
+
+
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
+{% endblock %}
